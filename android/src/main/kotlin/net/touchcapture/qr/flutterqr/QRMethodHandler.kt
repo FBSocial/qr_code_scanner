@@ -87,12 +87,41 @@ class QRMethodHandler(messenger: BinaryMessenger) : MethodChannel.MethodCallHand
     // Scan qr code from image
     private fun scanQrFromImage(image: Bitmap): Result {
         var source: RGBLuminanceSource? = null
+        ///如果是长图，就进行分段扫描
+        ///要保证二维码位于两个分段中间扫描不上，所以需要有一定的重合点。
+        if (image.height > 1000) {
+            var index = 0;
+            while ((index - 1) * 1000 < image.height) {
+                val width: Int = image.width
+                val height: Int = image.height
+                val pixels = IntArray(width * height)
+                var y = index * 1000 - 500;
+                var doHeight = 1500;
+                if (y < 0) {
+                    y = 0
+                }
+                if (y + doHeight > image.height) {
+                    doHeight = image.height - y
+                }
+                image.getPixels(pixels, 0, width, 0, y, width, doHeight)
+                source = RGBLuminanceSource(width, doHeight, pixels)
+                index += 1;
+                try {
+                    var re = MultiFormatReader().decode(BinaryBitmap(HybridBinarizer(source)), hints)
+                    return re;
+                } catch (e: Exception) {
+
+                }
+            }
+
+        }
+
         try {
             val width: Int = image.width
             val height: Int = image.height
             val pixels = IntArray(width * height)
-            image.getPixels(pixels, 0, width, 0, 0, width, height)
-            source = RGBLuminanceSource(width, height, pixels)
+            image.getPixels(pixels, 0, width, 0, 0, width, image.height - 4000)
+            source = RGBLuminanceSource(width, image.height, pixels)
             return MultiFormatReader().decode(BinaryBitmap(HybridBinarizer(source)), hints)
         } catch (e: Exception) {
             if (source == null) {
@@ -100,13 +129,14 @@ class QRMethodHandler(messenger: BinaryMessenger) : MethodChannel.MethodCallHand
             }
         }
         return MultiFormatReader().decode(BinaryBitmap(GlobalHistogramBinarizer(source)), hints)
+
     }
 
     private fun compressBitMap(path: String): Bitmap {
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
         BitmapFactory.decodeFile(path, options)
-        val shrinkHeight = 500
+        val shrinkHeight = 5000
         // compress image, shrink it's height within 500
         options.inSampleSize = if (options.outHeight > shrinkHeight) options.outHeight / shrinkHeight else 1
         options.inJustDecodeBounds = false
