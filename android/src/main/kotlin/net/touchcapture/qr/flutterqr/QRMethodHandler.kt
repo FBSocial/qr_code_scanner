@@ -120,7 +120,7 @@ class QRMethodHandler(messenger: BinaryMessenger) : MethodChannel.MethodCallHand
             val width: Int = image.width
             val height: Int = image.height
             val pixels = IntArray(width * height)
-            image.getPixels(pixels, 0, width, 0, 0, width, image.height - 4000)
+            image.getPixels(pixels, 0, width, 0, 0, width, image.height)
             source = RGBLuminanceSource(width, image.height, pixels)
             return MultiFormatReader().decode(BinaryBitmap(HybridBinarizer(source)), hints)
         } catch (e: Exception) {
