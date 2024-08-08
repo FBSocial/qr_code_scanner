@@ -233,9 +233,6 @@ class QRViewController {
 
   /// Gets information about which camera is active.
   Future<CameraFacing> getCameraInfo() async {
-    if (isOhos) {
-      return;
-    }
     try {
       var cameraFacing = await _channel.invokeMethod('getCameraInfo') as int;
       if (cameraFacing == -1) return _cameraFacing;
@@ -248,9 +245,6 @@ class QRViewController {
 
   /// Flips the camera between available modes
   Future<CameraFacing> flipCamera() async {
-    if (isOhos) {
-      return;
-    }
     try {
       return CameraFacing
           .values[await _channel.invokeMethod('flipCamera') as int];
@@ -262,7 +256,7 @@ class QRViewController {
   /// Get flashlight status
   Future<bool?> getFlashStatus() async {
     if (isOhos) {
-      return;
+      return null;
     }
     try {
       return await _channel.invokeMethod('getFlashInfo');
@@ -321,9 +315,6 @@ class QRViewController {
 
   /// Returns which features are available on device.
   Future<SystemFeatures> getSystemFeatures() async {
-    if (isOhos) {
-      return;
-    }
     try {
       var features =
           await _channel.invokeMapMethod<String, dynamic>('getSystemFeatures');
@@ -345,9 +336,6 @@ class QRViewController {
   /// Updates the view dimensions for iOS.
   static Future<bool> updateDimensions(GlobalKey key, MethodChannel channel,
       {QrScannerOverlayShape? overlay}) async {
-    if (isOhos) {
-      return;
-    }
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       // Add small delay to ensure the render box is loaded
       await Future.delayed(Duration(milliseconds: 100));
