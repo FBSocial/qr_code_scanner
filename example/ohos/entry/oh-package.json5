@@ -1,0 +1,11 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "Please describe the basic information.",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "qr_code_scanner": "file:/Users/yzh/Documents/ohLib/qr_code_scanner/example/ohos/har/qr_code_scanner.har"
+  }
+}

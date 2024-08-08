@@ -16,6 +16,8 @@ import 'types/features.dart';
 typedef QRViewCreatedCallback = void Function(QRViewController);
 typedef PermissionSetCallback = void Function(QRViewController, bool);
 
+final isOhos = Platform.operatingSystem.toLowerCase().contains('ohos');
+
 /// The [QRView] is the view where the camera
 /// and the barcode scanner gets displayed.
 class QRView extends StatefulWidget {
@@ -111,28 +113,33 @@ class _QRViewState extends State<QRView> {
 
   Widget _getPlatformQrView() {
     Widget _platformQrView;
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-        _platformQrView = AndroidView(
-          viewType: 'net.touchcapture.qr.flutterqr/qrview',
-          onPlatformViewCreated: _onPlatformViewCreated,
-          creationParams:
-              _QrCameraSettings(cameraFacing: widget.cameraFacing).toMap(),
-          creationParamsCodec: StandardMessageCodec(),
-        );
-        break;
-      case TargetPlatform.iOS:
-        _platformQrView = UiKitView(
-          viewType: 'net.touchcapture.qr.flutterqr/qrview',
-          onPlatformViewCreated: _onPlatformViewCreated,
-          creationParams:
-              _QrCameraSettings(cameraFacing: widget.cameraFacing).toMap(),
-          creationParamsCodec: StandardMessageCodec(),
-        );
-        break;
-      default:
-        throw UnsupportedError(
-            "Trying to use the default qrview implementation for $defaultTargetPlatform but there isn't a default one");
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      _platformQrView = AndroidView(
+        viewType: 'net.touchcapture.qr.flutterqr/qrview',
+        onPlatformViewCreated: _onPlatformViewCreated,
+        creationParams:
+        _QrCameraSettings(cameraFacing: widget.cameraFacing).toMap(),
+        creationParamsCodec: StandardMessageCodec(),
+      );
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      _platformQrView = UiKitView(
+        viewType: 'net.touchcapture.qr.flutterqr/qrview',
+        onPlatformViewCreated: _onPlatformViewCreated,
+        creationParams:
+        _QrCameraSettings(cameraFacing: widget.cameraFacing).toMap(),
+        creationParamsCodec: StandardMessageCodec(),
+      );
+    } else if (isOhos) {
+      _platformQrView = OhosView(
+        viewType: 'net.touchcapture.qr.flutterqr/qrview',
+        onPlatformViewCreated: _onPlatformViewCreated,
+        creationParams:
+        _QrCameraSettings(cameraFacing: widget.cameraFacing).toMap(),
+        creationParamsCodec: StandardMessageCodec(),
+      );
+    } else {
+      throw UnsupportedError(
+          "Trying to use the default qrview implementation for $defaultTargetPlatform but there isn't a default one");
     }
     return _platformQrView;
   }
@@ -211,6 +218,9 @@ class QRViewController {
   /// Starts the barcode scanner
   Future<void> _startScan(GlobalKey key, QrScannerOverlayShape? overlay,
       List<BarcodeFormat>? barcodeFormats) async {
+    if (isOhos) {
+      return;
+    }
     // We need to update the dimension before the scan is started.
     try {
       await QRViewController.updateDimensions(key, _channel, overlay: overlay);
@@ -223,6 +233,9 @@ class QRViewController {
 
   /// Gets information about which camera is active.
   Future<CameraFacing> getCameraInfo() async {
+    if (isOhos) {
+      return;
+    }
     try {
       var cameraFacing = await _channel.invokeMethod('getCameraInfo') as int;
       if (cameraFacing == -1) return _cameraFacing;
@@ -235,6 +248,9 @@ class QRViewController {
 
   /// Flips the camera between available modes
   Future<CameraFacing> flipCamera() async {
+    if (isOhos) {
+      return;
+    }
     try {
       return CameraFacing
           .values[await _channel.invokeMethod('flipCamera') as int];
@@ -245,6 +261,9 @@ class QRViewController {
 
   /// Get flashlight status
   Future<bool?> getFlashStatus() async {
+    if (isOhos) {
+      return;
+    }
     try {
       return await _channel.invokeMethod('getFlashInfo');
     } on PlatformException catch (e) {
@@ -254,6 +273,9 @@ class QRViewController {
 
   /// Toggles the flashlight between available modes
   Future<void> toggleFlash() async {
+    if (isOhos) {
+      return;
+    }
     try {
       await _channel.invokeMethod('toggleFlash') as bool?;
     } on PlatformException catch (e) {
@@ -263,6 +285,9 @@ class QRViewController {
 
   /// Pauses the camera and barcode scanning
   Future<void> pauseCamera() async {
+    if (isOhos) {
+      return;
+    }
     try {
       await _channel.invokeMethod('pauseCamera');
     } on PlatformException catch (e) {
@@ -272,6 +297,9 @@ class QRViewController {
 
   /// Stops barcode scanning and the camera
   Future<void> stopCamera() async {
+    if (isOhos) {
+      return;
+    }
     try {
       await _channel.invokeMethod('stopCamera');
     } on PlatformException catch (e) {
@@ -281,6 +309,9 @@ class QRViewController {
 
   /// Resumes barcode scanning
   Future<void> resumeCamera() async {
+    if (isOhos) {
+      return;
+    }
     try {
       await _channel.invokeMethod('resumeCamera');
     } on PlatformException catch (e) {
@@ -290,6 +321,9 @@ class QRViewController {
 
   /// Returns which features are available on device.
   Future<SystemFeatures> getSystemFeatures() async {
+    if (isOhos) {
+      return;
+    }
     try {
       var features =
           await _channel.invokeMapMethod<String, dynamic>('getSystemFeatures');
@@ -311,6 +345,9 @@ class QRViewController {
   /// Updates the view dimensions for iOS.
   static Future<bool> updateDimensions(GlobalKey key, MethodChannel channel,
       {QrScannerOverlayShape? overlay}) async {
+    if (isOhos) {
+      return;
+    }
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       // Add small delay to ensure the render box is loaded
       await Future.delayed(Duration(milliseconds: 100));

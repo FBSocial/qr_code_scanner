@@ -21,5 +21,8 @@ flutter:
       android:
         package: net.touchcapture.qr.flutterqr
         pluginClass: FlutterQrPlugin
+      ohos:
+          package: net.touchcapture.qr.flutterqr
+          pluginClass: FlutterQrPlugin
       ios:
         pluginClass: FlutterQrPlugin
