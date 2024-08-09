@@ -10,8 +10,8 @@ class MethodChannelQrCodeScanner extends QrCodeScannerPlatform {
   final methodChannel = const MethodChannel('qr_code_scanner');
 
   @override
-  Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
+  Future<String?> scanQrCode() async {
+    final version = await methodChannel.invokeMethod<String>('scanQrCode');
     return version;
   }
 }

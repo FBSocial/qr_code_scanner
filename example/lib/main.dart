@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:qr_code_scanner/qr_code_scanner_platform_interface.dart';
 
 void main() => runApp(MaterialApp(home: QRViewExample()));
 
@@ -94,9 +95,9 @@ class _QRViewExampleState extends State<QRViewExample> {
                         margin: EdgeInsets.all(8),
                         child: ElevatedButton(
                           onPressed: () async {
-                            await controller?.pauseCamera();
+                            QrCodeScannerPlatform.instance.scanQrCode();
                           },
-                          child: Text('pause', style: TextStyle(fontSize: 20)),
+                          child: Text('华为扫码', style: TextStyle(fontSize: 20)),
                         ),
                       ),
                       Container(
@@ -145,6 +146,7 @@ class _QRViewExampleState extends State<QRViewExample> {
         : 300.0;
     // To ensure the Scanner view is properly sizes after rotation
     // we need to listen for Flutter SizeChanged notification and update controller
+    return SizedBox();
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,

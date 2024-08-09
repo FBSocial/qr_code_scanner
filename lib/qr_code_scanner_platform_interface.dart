@@ -23,7 +23,7 @@ abstract class QrCodeScannerPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<String?> getPlatformVersion() {
+  Future<String?> scanQrCode() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 }

@@ -12,6 +12,7 @@ import 'types/barcode_format.dart';
 import 'types/camera.dart';
 import 'types/camera_exception.dart';
 import 'types/features.dart';
+import '../qr_code_scanner_platform_interface.dart';
 
 typedef QRViewCreatedCallback = void Function(QRViewController);
 typedef PermissionSetCallback = void Function(QRViewController, bool);
@@ -354,6 +355,11 @@ class QRViewController {
       }
     }
     return false;
+  }
+
+  ///鸿蒙无UI直接扫码
+  static Future<String?> ohosQrCodeScan() {
+    return QrCodeScannerPlatform.instance.scanQrCode();
   }
 }
 
