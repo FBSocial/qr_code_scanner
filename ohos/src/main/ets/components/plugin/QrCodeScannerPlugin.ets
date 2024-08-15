@@ -10,18 +10,18 @@ import {
 
 import { CustomFactory } from '../CustomFactory';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { scanCore, scanBarcode } from '@kit.ScanKit';
+import { scanCore, scanBarcode, detectBarcode } from '@kit.ScanKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+
 const TAG: string = 'ScanKit createBarcode';
 
 /** QrCodeScannerPlugin **/
 export default class QrCodeScannerPlugin implements FlutterPlugin, MethodCallHandler {
   public channel: MethodChannel | null = null;
-
+  public scanFileChanne: MethodChannel | null = null;
   public static instance: QrCodeScannerPlugin | null ;
 
-  constructor() {
-  }
+  constructor() {}
 
   getUniqueClassName(): string {
     return "QrCodeScannerPlugin"
@@ -30,7 +30,9 @@ export default class QrCodeScannerPlugin implements FlutterPlugin, MethodCallHan
   onAttachedToEngine(binding: FlutterPluginBinding): void {
     QrCodeScannerPlugin.instance = this;
     this.channel = new MethodChannel(binding.getBinaryMessenger(), "qr_code_scanner");
+    this.scanFileChanne = new MethodChannel(binding.getBinaryMessenger(), "net.touchcapture.qr.flutterqr.qrScan");
     this.channel.setMethodCallHandler(this)
+    this.scanFileChanne.setMethodCallHandler(this);
     binding.getPlatformViewRegistry()?.
     registerViewFactory('net.touchcapture.qr.flutterqr/qrview', new CustomFactory(binding.getBinaryMessenger(), StandardMessageCodec.INSTANCE));
   }
@@ -62,6 +64,21 @@ export default class QrCodeScannerPlugin implements FlutterPlugin, MethodCallHan
           hilog.error(0x0001, TAG, `扫码失败 to start the scanning service. Code: ${error.code}`);
           result.success('');
         }
+      });
+    } else if (call.method == "scanImage") {
+      let path = call.argument("path") as string;
+      let options: scanBarcode.ScanOptions = {
+        scanTypes: [scanCore.ScanType.ALL],
+        enableMultiMode: true
+      }
+      detectBarcode.decode({ uri: path }, options).then((r: Array<scanBarcode.ScanResult>) => {
+        if (r.length > 0) {
+          result.success({"code": r[0].originalValue, "type": "QR_CODE"});
+        }else {
+          result.success(null);
+        }
+      }).catch((error: BusinessError) => {
+        result.success(null);
       });
     } else {
       result.notImplemented()

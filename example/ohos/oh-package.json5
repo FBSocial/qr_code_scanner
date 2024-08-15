@@ -14,7 +14,7 @@
   },
   "overrides": {
     "@ohos/flutter_ohos": "file:./har/flutter.har",
-    "qr_code_scanner": "file:/Users/yzh/Documents/ohLib/qr_code_scanner/example/ohos/har/qr_code_scanner.har",
+    "qr_code_scanner": "file:./har/qr_code_scanner.har",
     "@ohos/flutter_module": "file:./entry"
   }
 }
