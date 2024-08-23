@@ -119,7 +119,7 @@ class _QRViewState extends State<QRView> {
         viewType: 'net.touchcapture.qr.flutterqr/qrview',
         onPlatformViewCreated: _onPlatformViewCreated,
         creationParams:
-        _QrCameraSettings(cameraFacing: widget.cameraFacing).toMap(),
+            _QrCameraSettings(cameraFacing: widget.cameraFacing).toMap(),
         creationParamsCodec: StandardMessageCodec(),
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
@@ -127,17 +127,19 @@ class _QRViewState extends State<QRView> {
         viewType: 'net.touchcapture.qr.flutterqr/qrview',
         onPlatformViewCreated: _onPlatformViewCreated,
         creationParams:
-        _QrCameraSettings(cameraFacing: widget.cameraFacing).toMap(),
+            _QrCameraSettings(cameraFacing: widget.cameraFacing).toMap(),
         creationParamsCodec: StandardMessageCodec(),
       );
     } else if (isOhos) {
-      _platformQrView = OhosView(
-        viewType: 'net.touchcapture.qr.flutterqr/qrview',
-        onPlatformViewCreated: _onPlatformViewCreated,
-        creationParams:
-        _QrCameraSettings(cameraFacing: widget.cameraFacing).toMap(),
-        creationParamsCodec: StandardMessageCodec(),
-      );
+      // _platformQrView = OhosView(
+      //   viewType: 'net.touchcapture.qr.flutterqr/qrview',
+      //   onPlatformViewCreated: _onPlatformViewCreated,
+      //   creationParams:
+      //   _QrCameraSettings(cameraFacing: widget.cameraFacing).toMap(),
+      //   creationParamsCodec: StandardMessageCodec(),
+      // );
+      throw UnsupportedError(
+          "Trying to use the default qrview implementation for $defaultTargetPlatform but there isn't a default one");
     } else {
       throw UnsupportedError(
           "Trying to use the default qrview implementation for $defaultTargetPlatform but there isn't a default one");
